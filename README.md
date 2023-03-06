@@ -2,8 +2,9 @@
 
 Garrett Hill's final project for the Spring 2023 semester of ENPM697 at the University of Maryland
 
+# Using this Repository
 
-# Resources
+The main files of interest are:
 
-- [Malware Development for Dummies Github](https://github.com/chvancooten/maldev-for-dummies)
-- [Malware Development Research Paper](https://www.researchgate.net/publication/358979335_Malware_development)
+- Writeup.md (text writeup)
+- slides.odp (presentation slides)
