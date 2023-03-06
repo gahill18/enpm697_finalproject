@@ -2,7 +2,15 @@
 
 By Garrett Hill
 
-## What is Malware?
+## Table of Contents
+
+1. [What is Malware?](#whatismalware)
+2. [Malware Development Lifecycle](#mdlc)
+3. [Demonstration](#demo)
+4. [Conclusions](#conclusions)
+4. [Resources](#resources)
+
+## What is Malware? <a name="whatismalware"></a>
 
 Malicious software, or "malware", is a broad array of programs and scripts intended to cause damage or acquire unauthorized access.[1]
 It can be used in pursuit of a variety of interests, including:
@@ -37,7 +45,7 @@ Additionally, the rise in cyber warfare has introduced the world to some of the 
 
 So, knowing that malware is immensely profitable and vital to modern warfare, it seems valuable to be able to predict how both current and future malware works.
 
-## The Malware Development Lifecycle
+## The Malware Development Lifecycle <a name="mdlc"></a>
 
 The Malware Development Lifecycle (MDLC) can be broken up into 6 main sections:
 
@@ -78,7 +86,7 @@ If we know that our target is an Ubuntu server running on an x86 chipset running
 
 ### Maintain
 
-## Demonstration!
+## Demonstration! <a name="demo"></a>
 
 ### Target
 
@@ -114,9 +122,9 @@ What do we know about web servers?
 
 ### Results
 
-## Conclusions
+## Conclusions <a name="conclusions"></a>
 
-## Resources
+## Resources <a name="resources"></a>
 
 1. https://www.researchgate.net/publication/358979335_Malware_development
 2. https://www.lifewire.com/brief-history-of-malware-153616
