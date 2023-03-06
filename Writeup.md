@@ -33,13 +33,36 @@ In its infancy, malware was largely made by hobbyists and those seeking personal
 There is an ongoing arms race between these three groups. Each one has both conflicting and overlapping interests, and they are each fighting against the others.
 The proliferation of Malware as a Service (MaaS), and more specifically Ransomware as a Service (RaaS) is inextricably linked to the rise of the professional hacker group.
 These services are sold to anyone looking to utilize them, meaning anyone with $5000 USD and a motive can access top of the line ransomware and target a place of business they are personally familiar with.
-Additionally, the rise in cyber warfare has introduced the world to some of the most advanced malware ever, like the US government's in-house developed Stuxnet malware.
+Additionally, the rise in cyber warfare has introduced the world to some of the most advanced malware ever, like the US government's Stuxnet and WannaCry.
 
 So, knowing that malware is immensely profitable and vital to modern warfare, it seems valuable to be able to predict how both current and future malware works.
 
+## The Malware Development Lifecycle
+
+The Malware Development Lifecycle (MDLC) can be broken up into 6 main sections:
+
+1. Target
+2. Objectives
+3. Research
+4. Implement
+5. Deploy
+6. Maintain
+
+### Target
+
+### Objectives
+
+### Research
+
+### Implement
+
+### Deploy
+
+### Maintain
+
 ## Demonstration!
 
-### Target Scope
+### Target
 
 Before choosing what we want out of our malware, we need to choose our attack space. Knowing what systems we are attacking allows us to make informed design decisions in our exploitation.
 
@@ -52,7 +75,7 @@ has already installed the vulnerable dependencies, we can attack them in almost 
 
 The third system(s) are very generic, and serves only as a guide for future research.
 
-### End Goal
+### Objectives
 
 Knowing our attack space, we can decide what we want our malware to do:
 
