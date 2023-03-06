@@ -50,9 +50,27 @@ The Malware Development Lifecycle (MDLC) can be broken up into 6 main sections:
 
 ### Target
 
+All malware is created with a purpose, just like any other piece of software. Malware needs to be designed around the environment it will be deployed to, which includes analysis of both hardware and software.
+It might not be enough to know what operating system your target is running, you may need to know what architecture (hardware) it is running on.
+For example, malware targeting x86 processors might be different from that targeting ARM architecture.
+
 ### Objectives
 
+With how many different services run digitally these days, entire sectors of national economies are reliant on server uptime.
+As mentioned previously, the nation state actor will generally have a different objective than the MaaS provider, but all malware will generally have at least one of two motives:
+
+1. Political motives (more aligned with the nation state actor)
+2. Financial motives
+
+Political motives are fundamentally focused on information and control of resources. Infrastructure, defense technology, and state secrets are primary targets, and espionage or sabotage are much more prevalent.
+Financial motives are fundamentally focused on making as much money as possible over the course of a malware's lifespan. Ransomware, extortion/blackmail, and identity theft are some of the most common methods.
+These motives drive our malware's methodology. If we want to steal a set of emails from a political party's private server, our methods will look very different to if we wanted to sabotage an oil pipeline.
+
 ### Research
+
+With our target and objectives defined, we can finally start digging into technical details.
+The most advanced malware might be custom designed for a given target's network, but more often malware is designed with generality in mind.
+If we know that our target is an Ubuntu server running on an x86 chipset running a Jellyfin server, we can start googling relevent CVEs that might not have been patched yet.
 
 ### Implement
 
