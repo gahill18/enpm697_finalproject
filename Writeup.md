@@ -190,7 +190,7 @@ With a language chosen, I started the first part of development: roadmapping. Us
 With a general outline of functionality established, I started searching for preexisting library functionality I could lean on. Below is a list of libraries, or "crates" as Rust calls them, that I utilize, along with what I use them for.
 
 - [config](https://crates.io/crates/config) (Configuration)
-- [shodan](https://crates.io/crates/shodan) (Internet scanning)
+- [shodan-client](https://crates.io/crates/shodan-client) (Internet scanning)
 - [qscan](https://crates.io/crates/qscan) (Local network scanning)
 - [sysinfo](https://crates.io/crates/sysinfo) (Host system information)
 - [_]() (File system analysis)

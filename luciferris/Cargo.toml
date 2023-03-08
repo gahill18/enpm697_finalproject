@@ -1,0 +1,16 @@
+[package]
+name = "luciferris"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chacha20poly1305 = "0.10.1"
+clap = "4.1.8"
+config = "0.13.3"
+env_logger = "0.10.0"
+qscan = "0.6.0"
+rustls = "0.20.8"
+shodan-client = "0.0.2"
+sysinfo = "0.28.2"
