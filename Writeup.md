@@ -44,13 +44,14 @@ These services are sold to anyone looking to utilize them, meaning anyone with $
 Additionally, the rise in cyber warfare has introduced the world to some of the most advanced malware ever, like the US government's Stuxnet and WannaCry.
 
 So, knowing that malware is immensely profitable and vital to modern warfare, it seems valuable to be able to predict how both current and future malware works.
+That's where the third group comes in. Security researchers need to know WHAT malware will look like, so they want to know HOW it is built. Let's investigate the how!
 
 ## The Malware Development Lifecycle <a name="mdlc"></a>
 
 The Malware Development Lifecycle (MDLC) can be broken up into 6 main sections:
 
 1. Target
-2. Objectives
+2. Objective(s)
 3. Research
 4. Implement
 5. Deploy
@@ -76,15 +77,42 @@ These motives drive our malware's methodology. If we want to steal a set of emai
 
 ### Research
 
-With our target and objectives defined, we can finally start digging into technical details.
+With a target and objectives defined, we can finally start digging into technical details.
 The most advanced malware might be custom designed for a given target's network, but more often malware is designed with generality in mind.
 If we know that our target is an Ubuntu server running on an x86 chipset running a Jellyfin server, we can start googling relevent CVEs that might not have been patched yet.
 
 ### Implement
 
+So we've identified a vulnerability we want to exploit. Since malware is just software, we need to write some code that will interact with our target. That requires picking a "tech stack". There are countless choices, so how do we narrow it down?
+
+Look for a two main things when picking a malware development stack:
+
+1. Easy (enough) to Write
+2. Easy (enough) to Deploy
+
+Some languages might be easy to write due to their simple syntax and familiar data structures, but might be very difficult to deploy under expected operating conditions.
+Python is an incredibly popular language due to how quick you can write prototype functionality, but as an interpreted language, it requires an interpreter to be installed and run on your target machine, which is vulnerable to being caught early.
+On the other hand, languages like C++, Nim, and Rust are compiled languages, which means their functionality is baked down into a single executable with no external dependencies (usually).
+However, these executable files are only compatible with the architecture type they are explicitly compiled for, meaning you need multiple executables if you are targetting different system architectures.
+
+Once you've picked a language, you can get to work. You can look for common libraries or existing projects that might implememt some of the functionality you're looking for, but be careful to obfuscate any copy/pasted source code to avoid antivirus flagging known hash values.
+It may be worth reimplementing any functionality you intend to borrow independently to avoid this.
+
+Implementing basic functionality may not take a significant amount of time if relying on simple exploits, but some nation-state level development can occur for months or years.
+Test frequently against industry-common virus detection programs to see if your work is being flagged. Obfuscation can take even longer than core functionality development, so do not wait until the end of the project to start obfuscating.
+Document internally, but do not share your work publicly, for obvious reasons.
+
 ### Deploy
 
+Once you've tested rigorously against your mock target/targets, you can begin your infection campaign. This will look different for different kinds of malware;
+Your first victim might need to click a malicious link in a phishing email to download and install the program on their computer, or maybe you have an insider carry the program in on a USB.
+After the initial infection, the spread will depend heavily on your implementation. Perhaps you send another phishing email to every saved email contact on the infected device, or maybe you work your way quietly through all the connected devices (printers, speakers, etc).
+
 ### Maintain
+
+With your malware out in the world, you at minimum need a way to keep track of it's mission status. One way to do this is by using a command-and-control (C&C) server, which is responsible for receiving reports and issuing new commands to devices infected with your malware.[5]
+If you are receiving ransom payments for decryption keys, you need to have those keys on file somewhere accessible to only you, and you need to be able to actually receive payments in a way that can't be traced back to you.
+Payments are usually done with cryptocurrencies, but not all currencies are created equal. Each has different levels of anonymity and security, with Monero being the "Privacy Coin" with the largest current market cap.[6]
 
 ## Demonstration! <a name="demo"></a>
 
@@ -96,9 +124,7 @@ Before choosing what we want out of our malware, we need to choose our attack sp
 - [Secondary] Web servers running Fedora/RedHat/CentOS-based distributions of Linux
 - [Ternary] Other devices visible to the public internet with vulnerable access points
 
-The first two systems are quite similar, but use different software managemers (apt vs dnf) and different kernels. This will impact the number and type of vulnerabilities somewhat, but as long as the target device
-has already installed the vulnerable dependencies, we can attack them in almost exactly the same ways.
-
+The first two systems are quite similar, but use different package managemers and different kernels. This will impact the number and type of vulnerabilities somewhat, but as long as the target device has already installed the vulnerable dependencies, we can attack them in almost exactly the same ways.
 The third system(s) are very generic, and serves only as a guide for future research.
 
 ### Objectives
@@ -106,13 +132,13 @@ The third system(s) are very generic, and serves only as a guide for future rese
 Knowing our attack space, we can decide what we want our malware to do:
 
 1. Partially automate target acquisition via web scraping and local network callouts
-2. Access/Exfiltrate information
+2. Read/Exfiltrate/Encrypt Files
 3. Control/Reassign part or all of an infected device's computing resources
 4. Log infection rates and resource usage
 
 ### Target Research
 
-What do we know about web servers?
+What do we know about web servers? 
 
 ### Choosing an Exploit
 
@@ -130,3 +156,5 @@ What do we know about web servers?
 2. https://www.lifewire.com/brief-history-of-malware-153616
 3. https://www.comparitech.com/antivirus/malware-statistics-facts/
 4. https://www.forbes.com/sites/chuckbrooks/2022/01/21/cybersecurity-in-2022--a-fresh-look-at-some-very-alarming-stats/?sh=3282430d6b61
+5. https://www.techtarget.com/whatis/definition/command-and-control-server-CC-server
+6. https://decrypt.co/resources/what-are-privacy-coins-monero-zcash-and-dash-explained
