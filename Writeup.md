@@ -138,7 +138,16 @@ Knowing our attack space, we can decide what we want our malware to do:
 
 ### Target Research
 
-What do we know about web servers? 
+What do we know about web servers?
+
+1. Web servers run applications exposed to the internet
+2. Improper configurations introduce vulnerabilities
+3. Web servers are often improperly configured
+
+Ubuntu, a Debian and GNU/Linux based OS, is distributed as a server OS by the Canonical company. It supports many different architecture formats, including ARM, x86, and IBM POWER.
+In addition to bare-metal support, Ubuntu is also distributed as a Virtual Machine for testing and cloud-based distributed computing.
+For this demonstration, we will focus primarily on the Ubuntu 22.04.2 Long Term Service (LTS) for AMD/x86 distribution.
+We do so because it is one of the most popular OS on the web, and has extensive community documentation for security vulnerabilities.
 
 ### Choosing an Exploit
 
