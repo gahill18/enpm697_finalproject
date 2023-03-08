@@ -8,3 +8,4 @@ The main files of interest are:
 
 - Writeup.md (text writeup)
 - slides.odp (presentation slides)
+- luciferris/ (demonstration malware source code)
