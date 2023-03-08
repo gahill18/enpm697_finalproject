@@ -1,3 +1,3 @@
-# luciferris: a rusty proof of concept malware
+# luciferris: a rusty proof of concept malware 🦀
 
 
