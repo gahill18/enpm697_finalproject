@@ -149,6 +149,10 @@ In addition to bare-metal support, Ubuntu is also distributed as a Virtual Machi
 For this demonstration, we will focus primarily on the Ubuntu 22.04.2 Long Term Service (LTS) for AMD/x86 distribution.
 We do so because it is one of the most popular OS on the web, and has extensive community documentation for security vulnerabilities.
 
+Because we have access to the same installation image as the users setting up the target devices, we know the exact starting state of their systems.
+We can safely assume that at least a small portion of users will *never change the default configurations*, and of those who do change their configurations, a portion will configure their system in an unsecure way.[7]
+It is no longer enough to disable unused ports, or to change your password off of the default. Requiring public key authentication for SSH connections, maintaining a healthy firewall, and many other best practices are now necessary.
+
 ### Choosing an Exploit
 
 ### Implementation
@@ -167,3 +171,4 @@ We do so because it is one of the most popular OS on the web, and has extensive 
 4. https://www.forbes.com/sites/chuckbrooks/2022/01/21/cybersecurity-in-2022--a-fresh-look-at-some-very-alarming-stats/?sh=3282430d6b61
 5. https://www.techtarget.com/whatis/definition/command-and-control-server-CC-server
 6. https://decrypt.co/resources/what-are-privacy-coins-monero-zcash-and-dash-explained
+7. https://www.datto.com/blog/what-is-a-configuration-vulnerability
