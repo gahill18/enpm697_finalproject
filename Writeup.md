@@ -173,19 +173,19 @@ While a professional malware team might implement all functionality from scratch
 
 With a language chosen, I started the first part of development: roadmapping. Using the stated objectives from above, I came up with the following work tree:
 
-[ ] Target Acquisition
-  [ ] Devices connected to the public internet
-  [ ] Devices connected to an already infected device on the local network
-[ ] Data Exfiltration
-  [ ] Send readable file contents to a landing point
-    [ ] Stand up landing site
-    [ ] Randomize landing site hardware and url
-  [ ] Encrypt files that have been exfiltrated
-  [ ] Send decryption key upon receipt of payment
-[ ] Steal Computing Power
-  [ ] Control/Reassign part or all of an infected device's computing resources
-[ ] Logging
-  [ ] Log infection rates and resource usage
+- [ ] Target Acquisition
+  - [ ] Devices connected to the public internet
+  - [ ] Devices connected to an already infected device on the local network
+- [ ] Data Exfiltration
+  - [ ] Send readable file contents to a landing point
+    - [ ] Stand up landing site
+    - [ ] Randomize landing site hardware and url
+  - [ ] Encrypt files that have been exfiltrated
+  - [ ] Send decryption key upon receipt of payment
+- [ ] Steal Computing Power
+  - [ ] Control/Reassign part or all of an infected device's computing resources
+- [ ] Logging
+  - [ ] Log infection rates and resource usage
 
 With a general outline of functionality established, I started searching for preexisting library functionality I could lean on. Below is a list of libraries, or "crates" as Rust calls them, that I utilize, along with what I use them for.
 
