@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 chacha20poly1305 = "0.10.1"
-clap = "4.1.8"
+clap = { version = "4.1.8", features = ["derive"] }
 config = "0.13.3"
 env_logger = "0.10.0"
 qscan = "0.6.0"

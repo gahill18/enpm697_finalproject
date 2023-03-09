@@ -11,3 +11,5 @@
 
 # Lock files
 .\~*
+
+*/*.json
