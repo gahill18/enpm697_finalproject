@@ -1,7 +1,15 @@
-use std::{ops::Deref, path::PathBuf};
-
 use clap::{Parser, Subcommand};
 use config::{Config, ConfigError, File, FileFormat};
+
+mod borrow;
+mod ransom;
+mod snoop;
+mod spread;
+
+use borrow::borrow;
+use ransom::ransom;
+use snoop::snoop;
+use spread::spread;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -18,16 +26,12 @@ struct Cli {
     mode: Option<Modes>,
 }
 
-#[derive(Subcommand, Debug)]
+#[derive(Subcommand)]
 enum Modes {
-    /// does testing things
-    Test {
-        /// lists test values
-        #[arg(short, long)]
-        list: bool,
-    },
-    Snoop,
-    Encrypt,
+    Borrow, // Utilize system resources
+    Ransom, // Hold the infected system for ransom
+    Snoop,  // Gather information without being detected
+    Spread, // Spread the running program to other devices
 }
 
 fn read_config(path: &str) -> Result<Config, ConfigError> {
@@ -41,6 +45,15 @@ fn read_config(path: &str) -> Result<Config, ConfigError> {
 
 fn main() {
     let cli = Cli::parse();
+
+    // Show the disable mode
+    match cli.debug {
+        0 => println!("Debug mode is off"),
+        1 => println!("Debug mode is kind of on"),
+        2 => println!("Debug mode is on"),
+        _ => println!("Don't be crazy"),
+    }
+
     // Check if the user provided a config path
     if let Some(config_path) = cli.config.as_deref() {
         println!("{config_path:?}");
@@ -51,9 +64,11 @@ fn main() {
     // check if the user specified a mode
     if let Some(mode) = cli.mode {
         match mode {
-            Modes::Snoop => println!("snoop mode"),
-            Modes::Encrypt => println!("encrypt mode"),
-            _ => println!("unknown mode {mode:?}"),
+            Modes::Borrow => borrow(),
+            Modes::Ransom => ransom(),
+            Modes::Snoop => snoop(),
+            Modes::Spread => spread(),
+            _ => unreachable!(),
         }
     };
 }

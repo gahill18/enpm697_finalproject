@@ -14,3 +14,9 @@ qscan = "0.6.0"
 rustls = "0.20.8"
 shodan-client = "0.0.2"
 sysinfo = "0.28.2"
+tokio = { version = "1.21.2", features = ["full"] }
+
+[[bin]]
+edition = "2021"
+name = "luciferris"
+path = "src/main.rs"
