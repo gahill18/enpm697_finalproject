@@ -1,12 +1,10 @@
 use core::marker::Send;
-use env_logger::{fmt::Target, Builder};
-use log::{debug, error, info, log_enabled, LevelFilter};
+use env_logger::Builder;
+use log::{error, info, LevelFilter};
+use std::fs::File;
 use std::io::Write;
-use std::{collections::HashMap, path::PathBuf};
-use sysinfo::{
-    Component, Disk, NetworkData, NetworkExt, Networks, NetworksExt, Pid, Process, ProcessExt,
-    System, SystemExt,
-};
+use std::path::PathBuf;
+use sysinfo::{NetworkExt, ProcessExt, System, SystemExt};
 
 #[derive(Default)]
 struct LogDest {}
@@ -22,26 +20,18 @@ impl Write for LogDest {
 }
 unsafe impl Send for LogDest {}
 
-fn out(saveto: &Option<PathBuf>, buf: String) -> () {
-    if let Some(path) = saveto {
-        info!("writing to {:?}", path);
-        todo!()
-    } else {
-        info!("{}", buf)
+fn out(saveto: Option<File>, buf: String) -> () {
+    match saveto {
+        None => info!("{}", buf),
+        Some(mut file) => match file.write(buf.as_bytes()) {
+            Ok(bytes) => info!("wrote {} bytes", bytes),
+            Err(e) => error!("{:?}", e),
+        },
     }
 }
 
 // Log everything relevant about the system
-pub fn snoop(saveto: Option<PathBuf>) -> () {
-    let mut builder = Builder::from_default_env();
-
-    builder
-        .format(|buf, record| -> Result<(), std::io::Error> {
-            writeln!(buf, "{} - {}", record.level(), record.args())
-        })
-        .filter(None, LevelFilter::Info)
-        .init();
-
+pub fn snoop(saveto: Option<&str>) -> () {
     // builder.target(Target::Pipe(Box::new(LogDest::default())));
 
     // Please note that we use "new_all" to ensure that all list of
@@ -52,18 +42,20 @@ pub fn snoop(saveto: Option<PathBuf>) -> () {
     // First we update all information of our `System` struct.
     sys.refresh_all();
 
+    let mut out: String = String::from("");
+
     // We display all disks' information:
-    out(&saveto, format!("=> disks:"));
+    out.insert_str(0, &format!("=> disks:"));
     for disk in sys.disks() {
-        out(&saveto, format!("{:?}", disk));
+        out.insert_str(0, &format!("{:?}", disk));
     }
 
     // Network interfaces name, data received and data transmitted:
-    out(&saveto, format!("=> networks:"));
+    out.insert_str(0, &format!("=> networks:"));
     for (interface_name, data) in sys.networks() {
-        out(
-            &saveto,
-            format!(
+        out.insert_str(
+            0,
+            &format!(
                 "{}: {}/{} B",
                 interface_name,
                 data.received(),
@@ -73,50 +65,61 @@ pub fn snoop(saveto: Option<PathBuf>) -> () {
     }
 
     // Components temperature:
-    out(&saveto, format!("=> components:"));
+    out.insert_str(0, &format!("=> components:"));
     for component in sys.components() {
-        out(&saveto, format!("{:?}", component));
+        out.insert_str(0, &format!("{:?}", component));
     }
 
-    out(&saveto, format!("=> system:"));
+    out.insert_str(0, &format!("=> system:"));
     // RAM and swap information:
-    out(
-        &saveto,
-        format!("total memory: {} bytes", sys.total_memory()),
-    );
-    out(
-        &saveto,
-        format!("used memory : {} bytes", sys.used_memory()),
-    );
-    out(&saveto, format!("total swap  : {} bytes", sys.total_swap()));
-    out(&saveto, format!("used swap   : {} bytes", sys.used_swap()));
+    out.insert_str(0, &format!("total memory: {} bytes", sys.total_memory()));
+    out.insert_str(0, &format!("used memory : {} bytes", sys.used_memory()));
+    out.insert_str(0, &format!("total swap  : {} bytes", sys.total_swap()));
+    out.insert_str(0, &format!("used swap   : {} bytes", sys.used_swap()));
 
     // Display system information:
-    out(
-        &saveto,
-        format!("System name:             {:?}", sys.name()),
+    out.insert_str(0, &format!("System name:             {:?}", sys.name()));
+    out.insert_str(
+        0,
+        &format!("System kernel version:   {:?}", sys.kernel_version()),
     );
-    out(
-        &saveto,
-        format!("System kernel version:   {:?}", sys.kernel_version()),
+    out.insert_str(
+        0,
+        &format!("System OS version:       {:?}", sys.os_version()),
     );
-    out(
-        &saveto,
-        format!("System OS version:       {:?}", sys.os_version()),
-    );
-    out(
-        &saveto,
-        format!("System host name:        {:?}", sys.host_name()),
+    out.insert_str(
+        0,
+        &format!("System host name:        {:?}", sys.host_name()),
     );
 
     // Number of CPUs:
-    out(&saveto, format!("NB CPUs: {}", sys.cpus().len()));
+    out.insert_str(0, &format!("NB CPUs: {}", sys.cpus().len()));
 
     // Display processes ID, name na disk usage:
     for (pid, process) in sys.processes() {
-        out(
-            &saveto,
-            format!("[{}] {} {:?}", pid, process.name(), process.disk_usage()),
+        out.insert_str(
+            0,
+            &format!("[{}] {} {:?}", pid, process.name(), process.disk_usage()),
         );
+    }
+
+    // create/open file to write to
+    let mut file = match saveto {
+        Some(pathbuf) => match File::create(pathbuf) {
+            Ok(file) => Some(file),
+            Err(e) => {
+                error!("{:?}", e);
+                panic!()
+            }
+        },
+        _ => None,
+    };
+
+    match file {
+        Some(mut file) => match file.write(out.as_bytes()) {
+            Ok(bytes) => info!("wrote {} bytes", bytes),
+            Err(e) => error!("{}", e),
+        },
+        None => info!("{}", out),
     }
 }

