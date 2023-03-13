@@ -1,9 +1,8 @@
 use core::marker::Send;
-use std::collections::HashMap;
-use std::io::Write;
-
 use env_logger::{fmt::Target, Builder};
 use log::{debug, error, info, log_enabled, LevelFilter};
+use std::io::Write;
+use std::{collections::HashMap, path::PathBuf};
 use sysinfo::{
     Component, Disk, NetworkData, NetworkExt, Networks, NetworksExt, Pid, Process, ProcessExt,
     System, SystemExt,
@@ -23,8 +22,17 @@ impl Write for LogDest {
 }
 unsafe impl Send for LogDest {}
 
+fn out(saveto: &Option<PathBuf>, buf: String) -> () {
+    if let Some(path) = saveto {
+        info!("writing to {:?}", path);
+        todo!()
+    } else {
+        info!("{}", buf)
+    }
+}
+
 // Log everything relevant about the system
-pub fn snoop() -> () {
+pub fn snoop(saveto: Option<PathBuf>) -> () {
     let mut builder = Builder::from_default_env();
 
     builder
@@ -45,46 +53,70 @@ pub fn snoop() -> () {
     sys.refresh_all();
 
     // We display all disks' information:
-    info!("=> disks:");
+    out(&saveto, format!("=> disks:"));
     for disk in sys.disks() {
-        info!("{:?}", disk);
+        out(&saveto, format!("{:?}", disk));
     }
 
     // Network interfaces name, data received and data transmitted:
-    info!("=> networks:");
+    out(&saveto, format!("=> networks:"));
     for (interface_name, data) in sys.networks() {
-        info!(
-            "{}: {}/{} B",
-            interface_name,
-            data.received(),
-            data.transmitted()
+        out(
+            &saveto,
+            format!(
+                "{}: {}/{} B",
+                interface_name,
+                data.received(),
+                data.transmitted()
+            ),
         );
     }
 
     // Components temperature:
-    info!("=> components:");
+    out(&saveto, format!("=> components:"));
     for component in sys.components() {
-        info!("{:?}", component);
+        out(&saveto, format!("{:?}", component));
     }
 
-    info!("=> system:");
+    out(&saveto, format!("=> system:"));
     // RAM and swap information:
-    info!("total memory: {} bytes", sys.total_memory());
-    info!("used memory : {} bytes", sys.used_memory());
-    info!("total swap  : {} bytes", sys.total_swap());
-    info!("used swap   : {} bytes", sys.used_swap());
+    out(
+        &saveto,
+        format!("total memory: {} bytes", sys.total_memory()),
+    );
+    out(
+        &saveto,
+        format!("used memory : {} bytes", sys.used_memory()),
+    );
+    out(&saveto, format!("total swap  : {} bytes", sys.total_swap()));
+    out(&saveto, format!("used swap   : {} bytes", sys.used_swap()));
 
     // Display system information:
-    info!("System name:             {:?}", sys.name());
-    info!("System kernel version:   {:?}", sys.kernel_version());
-    info!("System OS version:       {:?}", sys.os_version());
-    info!("System host name:        {:?}", sys.host_name());
+    out(
+        &saveto,
+        format!("System name:             {:?}", sys.name()),
+    );
+    out(
+        &saveto,
+        format!("System kernel version:   {:?}", sys.kernel_version()),
+    );
+    out(
+        &saveto,
+        format!("System OS version:       {:?}", sys.os_version()),
+    );
+    out(
+        &saveto,
+        format!("System host name:        {:?}", sys.host_name()),
+    );
 
     // Number of CPUs:
-    info!("NB CPUs: {}", sys.cpus().len());
+    out(&saveto, format!("NB CPUs: {}", sys.cpus().len()));
 
     // Display processes ID, name na disk usage:
     for (pid, process) in sys.processes() {
-        info!("[{}] {} {:?}", pid, process.name(), process.disk_usage());
+        out(
+            &saveto,
+            format!("[{}] {} {:?}", pid, process.name(), process.disk_usage()),
+        );
     }
 }

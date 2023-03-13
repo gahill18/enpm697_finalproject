@@ -10,6 +10,7 @@ chacha20poly1305 = "0.10.1"
 clap = { version = "4.1.8", features = ["derive"] }
 config = "0.13.3"
 env_logger = "0.10.0"
+log = "0.4.17"
 qscan = "0.6.0"
 rustls = "0.20.8"
 shodan-client = "0.0.2"

