@@ -52,8 +52,6 @@ fn read_config(path: &str) -> Result<Config, ConfigError> {
 }
 
 fn main() {
-    env_logger::init();
-
     let cli = Cli::parse();
 
     // Show the disable mode
@@ -78,6 +76,7 @@ fn main() {
             Modes::Ransom => ransom(),
             Modes::Snoop => {
                 if let Some(output_dest) = cli.output {
+                    println!("{:?}", output_dest);
                     snoop(Some(&output_dest))
                 } else {
                     snoop(None)
