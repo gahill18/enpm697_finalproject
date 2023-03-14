@@ -12,4 +12,6 @@
 # Lock files
 .\~*
 
+# logging files
 */*.json
+*/*.info

