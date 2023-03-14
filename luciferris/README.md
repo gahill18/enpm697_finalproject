@@ -6,14 +6,14 @@
   - [ ] Devices connected to the public internet
   - [ ] Devices connected to an already infected device on the local network
 - [ ] Data Exfiltration
-  - [ ] Send readable file contents to a landing point
+  - [X] Encrypt Files
+  - [ ] Send keys/nonces to a landing point
     - [ ] Stand up landing site
     - [ ] Randomize landing site hardware and url
-  - [ ] Encrypt files that have been exfiltrated
   - [ ] Send decryption key upon receipt of payment
 - [ ] Steal Computing Power
   - [ ] Control/Reassign part or all of an infected device's computing resources
 - [ ] Logging
-  - [x] Resource Usage
+  - [X] Resource Usage
   - [ ] Infection rates
-  - [ ] Send logs off device
+  - [ ] Send logs to C&C
