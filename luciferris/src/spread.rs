@@ -1,15 +1,16 @@
 use qscan::qscanner::QScanner;
-use shodan_client::*;
+use ssh::*;
+
+type URL = String;
 
 pub fn spread() {
-    println!("spread mode");
+    let targets: Vec<String> = Vec::new();
+}
 
-    let mut scanner = QScanner::new("127.0.0.1", "80");
-    let lst = scanner.scan_tcp_connect();
-
-    async {
-        for port in lst.await {
-            println!("{port:?}")
-        }
-    };
+fn ssh_to_url(dst: &URL) -> Result<(), &'static str> {
+    let mut session = Session::new().unwrap();
+    session.set_host(dst).unwrap();
+    session.parse_config(None).unwrap();
+    session.connect().unwrap();
+    Ok(())
 }
