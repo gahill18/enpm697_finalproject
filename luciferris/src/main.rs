@@ -73,7 +73,7 @@ fn main() {
     if let Some(mode) = cli.mode {
         match mode {
             Modes::Borrow => borrow(),
-            Modes::Ransom => ransom(),
+            Modes::Ransom => ransom("./", "abcd.efg"),
             Modes::Snoop => {
                 if let Some(output_dest) = cli.output {
                     println!("{:?}", output_dest);

