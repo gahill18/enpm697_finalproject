@@ -14,4 +14,6 @@
 - [ ] Steal Computing Power
   - [ ] Control/Reassign part or all of an infected device's computing resources
 - [ ] Logging
-  - [ ] Log infection rates and resource usage
+  - [x] Resource Usage
+  - [ ] Infection rates
+  - [ ] Send logs off device
