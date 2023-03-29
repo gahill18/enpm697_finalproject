@@ -62,11 +62,10 @@ fn main() {
     let mut builder = Builder::from_default_env();
     builder.format(|buf, record| writeln!(buf, "{} - {}", record.level(), record.args()));
     if let Some(save_to) = cli.output {
-        match std::fs::File::create(save_to) {
-            Ok(file) => {
-                builder.target(Target::Pipe(Box::new(file)));
-            }
-            Err(e) => println!("[ERROR]: {:?}", e),
+        if let Ok(file) = std::fs::File::create(save_to) {
+            builder.target(Target::Pipe(Box::new(file)));
+        } else {
+            builder.target(Target::Stdout);
         }
     }
 
