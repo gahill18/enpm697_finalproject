@@ -199,6 +199,10 @@ With a general outline of functionality established, I started searching for pre
 - [chacha20poly1305](https://crates.io/crates/chacha20poly1305) (Encryption)
 - [env_logger](https://crates.io/crates/env_logger) (Logging)
 
+I also investigated techniques to decrease the binary size, since downloading large files would likely trigger alerts on the host sytem.
+Most of these techniques are implemented in the "Cargo.toml" file, which tells the project what crates and options to use when compiling and linking.
+See [this page](https://github.com/johnthagen/min-sized-rust) for more information.
+
 ### Deployment
 
 ### Results

@@ -25,5 +25,6 @@ path = "src/main.rs"
 [profile.release]
 strip = true  # Automatically strip symbols from the binary.
 opt-level = "z"  # Optimize for size.
-lto = true
-codegen-units = 1
+lto = true # link time optimization
+codegen-units = 1 # compile time de-parallelization
+panic = "abort" # remove error handling code
