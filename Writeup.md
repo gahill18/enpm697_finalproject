@@ -189,22 +189,23 @@ With a language chosen, I started the first part of development: roadmapping. Us
 
 With a general outline of functionality established, I started searching for preexisting library functionality I could lean on. Below is a list of libraries, or "crates" as Rust calls them, that I utilize, along with what I use them for.
 
-- [config](https://crates.io/crates/config) (Configuration)
-- [shodan-client](https://crates.io/crates/shodan-client) (Internet scanning)
-- [qscan](https://crates.io/crates/qscan) (Local network scanning)
-- [tokio]() (Asynchronous runtime environment)
-- [sysinfo](https://crates.io/crates/sysinfo) (Host system information)
-- []() (File system analysis)
-- [rustls](https://crates.io/crates/rustls) (Outbound messages)
 - [chacha20poly1305](https://crates.io/crates/chacha20poly1305) (Encryption)
+- [clap](https://crates.io/crates/clap) (Command Line Argument Parsing)
+- [config](https://crates.io/crates/config) (Configuration)
 - [env_logger](https://crates.io/crates/env_logger) (Logging)
+- [qscan](https://crates.io/crates/qscan) (Local network scanning)
+- [rustls](https://crates.io/crates/rustls) (Outbound messages)
+- [sysinfo](https://crates.io/crates/sysinfo) (Host system information)
+
+Most of the actual programming was gluing together the above crates with intermediary functions and data structures.
+For example, the snooping module uses the sysinfo crate to get information about the system, and the env_logger crate to store the output to a file.
 
 I also investigated techniques to decrease the binary size, since downloading large files would likely trigger alerts on the host sytem.
 Most of these techniques are implemented in the "Cargo.toml" file, which tells the project what crates and options to use when compiling and linking.
 Before adding the release profile optimizations, the file size was roughly 8 megabytes. After adding the optimizations, the size was 2 megabytes,
 which is an improvement of 75%.
  
-See [this page](https://github.com/johnthagen/min-sized-rust) for more information on shrinking rust binaries.
+See [this page (reference #8)](https://github.com/johnthagen/min-sized-rust) for more information on shrinking rust binaries.
 
 ### Deployment
 
@@ -221,3 +222,4 @@ See [this page](https://github.com/johnthagen/min-sized-rust) for more informati
 5. https://www.techtarget.com/whatis/definition/command-and-control-server-CC-server
 6. https://decrypt.co/resources/what-are-privacy-coins-monero-zcash-and-dash-explained
 7. https://www.datto.com/blog/what-is-a-configuration-vulnerability
+8. https://github.com/johnthagen/min-sized-rust
