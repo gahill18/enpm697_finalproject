@@ -1,5 +1,4 @@
 use log::{error, info};
-use qscan::qscanner::QScanner;
 // use ssh::Session; // Currently causing linker error
 
 type URL = String;
