@@ -7,12 +7,10 @@
   - [ ] Devices connected to an already infected device on the local network
 - [ ] Data Exfiltration
   - [X] Encrypt Files
-  - [ ] Send keys/nonces to a landing point
-    - [ ] Stand up landing site
-    - [ ] Randomize landing site hardware and url
+  - [ ] Securely send keys/nonces to a landing point
   - [ ] Send decryption key upon receipt of payment
-- [ ] Steal Computing Power
-  - [ ] Control/Reassign part or all of an infected device's computing resources
+- [X] Steal Computing Power
+  - [X] Control/Reassign part or all of an infected device's computing resources
 - [ ] Logging
   - [X] Resource Usage
   - [ ] Infection rates
