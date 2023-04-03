@@ -1,10 +1,8 @@
-use env_logger::{Builder, Target};
-use log::{error, info, Level, LevelFilter};
-use std::fs::File;
+use log::info;
 use sysinfo::{NetworkExt, ProcessExt, System, SystemExt};
 
 // Log everything relevant about the system
-pub fn snoop() -> () {
+pub fn snoop() {
     // Please note that we use "new_all" to ensure that all list of
     // components, network interfaces, disks and users are already
     // filled!

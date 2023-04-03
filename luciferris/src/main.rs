@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 use config::{Config, ConfigError, FileFormat};
 use env_logger::{fmt::Target, Builder};
-use log::{error, info, warn, Level};
+use log::{error, info, Level};
 use std::{io::Write, path::PathBuf};
 
 mod borrow;
@@ -53,7 +53,7 @@ enum Modes {
 
 fn main() {
     // get user input
-    let mut cli = Cli::parse();
+    let cli = Cli::parse();
 
     // set up logging
     let mut builder = Builder::from_default_env();

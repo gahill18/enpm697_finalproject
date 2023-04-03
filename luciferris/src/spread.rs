@@ -1,7 +1,7 @@
 use log::{error, info};
 // use ssh::Session; // Currently causing linker error
 
-type URL = String;
+type Url = String;
 
 struct Command;
 
@@ -18,15 +18,16 @@ impl Default for Command {
 }
 
 struct SSHConn {
-    url: URL,
+    url: Url,
 }
 
 impl SSHConn {
-    fn new(url: URL) -> Self {
+    fn new(url: Url) -> Self {
         Self { url }
     }
 
-    fn snd_cmd(&mut self, cmd: Command) -> Result<(), &str> {
+    fn snd_cmd(&mut self, _cmd: Command) -> Result<(), &str> {
+        let _dst: Url = self.url.clone();
         Ok(())
     }
 }
@@ -38,7 +39,7 @@ impl From<String> for SSHConn {
 }
 
 pub fn spread() {
-    let targets: Vec<String> = todo!();
+    let targets: Vec<String> = vec![]; // TODO
     for target in targets {
         match ssh_to_url(target) {
             Ok(mut conn) => match conn.snd_cmd(Command::default()) {
@@ -50,7 +51,7 @@ pub fn spread() {
     }
 }
 
-fn ssh_to_url(dst: URL) -> Result<SSHConn, &'static str> {
+fn ssh_to_url(dst: Url) -> Result<SSHConn, &'static str> {
     let conn = SSHConn::from(dst);
     // let mut session = Session::new().unwrap();
     // session.set_host(dst).unwrap();
