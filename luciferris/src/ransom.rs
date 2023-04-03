@@ -2,6 +2,7 @@ use chacha20poly1305::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
     ChaCha20Poly1305, Key, Nonce,
 };
+use config::Config;
 use log::{error, info};
 use std::{
     fmt,
@@ -37,6 +38,7 @@ impl EncryptedFile {
     }
 }
 
+// EncryptedFile can be generated from a reference to a directory entry
 impl From<&DirEntry> for EncryptedFile {
     fn from(value: &DirEntry) -> Self {
         let mut buf: String = String::new();
