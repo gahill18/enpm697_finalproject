@@ -12,3 +12,4 @@ Cargo.lock
 # logging files
 */*.json
 */*.info
+*/*.log
