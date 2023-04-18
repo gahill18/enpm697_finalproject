@@ -194,7 +194,7 @@ With a general outline of functionality established, I started searching for pre
 - [config](https://crates.io/crates/config) (Configuration)
 - [env_logger](https://crates.io/crates/env_logger) (Logging)
 - [qscan](https://crates.io/crates/qscan) (Local network scanning)
-- [rustls](https://crates.io/crates/rustls) (Outbound messages)
+- [reqwest](https://crates.io/crates/reqwest) (Networking)
 - [sysinfo](https://crates.io/crates/sysinfo) (Host system information)
 
 Most of the actual programming was gluing together the above crates with intermediary functions and data structures.
