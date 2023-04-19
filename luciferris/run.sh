@@ -1,2 +1,2 @@
-cargo run -- -dd -c conf.json -o out.log get-command
+cargo run -- -dd -c config.json -o out.log get-command
 cat out.log

