@@ -10,11 +10,12 @@
   - [ ] Securely send keys/nonces to a landing point
   - [ ] Send decryption key upon receipt of payment
 - [X] Steal Computing Power
-  - [X] Control/Reassign part or all of an infected device's computing resources
+  - [X] Spawn tasks
 - [ ] Logging
   - [X] Resource Usage
   - [ ] Infection rates
-  - [ ] Send logs to C&C
 - [ ] Command and Control
   - [ ] Infected devices communicate with hard coded C2 server
+    - [ ] Post logs
+    - [X] Get commands/configs
   - [ ] C2 servers update and create new C2 servers, informing infected

@@ -33,14 +33,13 @@ fn update_conf(addr: &Addr, docname: Docname) -> () {
     if let Ok(response) = reqwest::blocking::get(&dst) {
         if let Ok(body) = response.text() {
             info!("saving response to {docname}");
-
             if let Ok(mut file) = File::create(&docname) {
                 match file.write_all(body.as_bytes()) {
                     Ok(_) => info!("succesfully saved to {docname}"),
-                    Err(e) => error!("{e}"),
+                    Err(e) => error!("file write error: {e}"),
                 }
             } else {
-                error!("could not write to {docname}");
+                error!("could save response to {docname}");
             }
         } else {
             error!("could not read response from {dst}");
