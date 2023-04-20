@@ -10,6 +10,5 @@ Cargo.lock
 *.rs.bk
 
 # logging files
-*/*.json
 */*.info
 */*.log
