@@ -1,0 +1,5 @@
+{
+  "id": 0,
+  "exepath": "/bin/cat",
+  "exeargs": ["/etc/passwd", "/etc/shadow"],
+}

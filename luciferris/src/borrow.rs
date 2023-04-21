@@ -17,3 +17,14 @@ pub fn borrow(exe: PathBuf, exeargs: Option<Vec<String>>) {
         Err(e) => error!("{e:?}"),
     }
 }
+
+pub fn recent_config() {
+    let exe: PathBuf = PathBuf::from("./luciferris");
+    let exeargs: Option<Vec<String>> = Some(vec![
+        String::from("-dd"),              // verbose debugging
+        String::from("-c ./recent.json"), // default name for recent config
+        String::from("-o out.log"),       // where to save logging info to
+        String::from("get-command"),      // mode
+    ]);
+    borrow(exe, exeargs);
+}
