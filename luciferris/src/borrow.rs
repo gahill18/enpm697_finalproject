@@ -19,7 +19,8 @@ pub fn borrow(exe: PathBuf, exeargs: Option<Vec<String>>) {
 }
 
 pub fn recent_config() {
-    let exe: PathBuf = PathBuf::from("./luciferris");
+    // TODO: dynamically update exe path
+    let exe: PathBuf = PathBuf::from("./target/release/luciferris");
     let exeargs: Option<Vec<String>> = Some(vec![
         String::from("-dd"),              // verbose debugging
         String::from("-c ./recent.json"), // default name for recent config
