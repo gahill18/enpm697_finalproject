@@ -54,21 +54,43 @@ fn download_doc(addr: &Addr, docname: &Docname) -> Result<(), String> {
     match blocking_get(&dst) {
         Ok(body) => {
             try_file_write(docname, &body)?;
-            try_file_write(&String::from("./recent.json"), &body)
+            try_file_write(&String::from("./recent.json"), &body)?;
+            Ok(info!("downloaded doc {docname} successfully"))
         }
         Err(msg) => Err(msg),
     }
 }
 
 fn try_file_write(docname: &String, body: &str) -> Result<(), String> {
-    info!("saving body {body} to {docname}");
+    info!("trying file write: {body} to {docname}");
     if let Ok(mut file) = File::create(docname) {
         match file.write_all(body.as_bytes()) {
-            Ok(_) => Ok(info!("succesfully saved body to {docname}")),
+            Ok(_) => Ok(info!("succesful file write to {docname}")),
             Err(e) => Err(format!("{e}")),
         }
     } else {
         Err(format!("could not save body to {docname}"))
+    }
+}
+
+fn blocking_post(addr: &Addr, body: String) -> Result<(), String> {
+    info!("blocking get to {addr}");
+    let client = reqwest::blocking::Client::new();
+    match client.post(addr).body("").send() {
+        Ok(resp) => Ok(info!("response from {addr}: {resp:?}")),
+        Err(e) => Err(format!("{e}")),
+    }
+}
+
+fn upload_doc(addr: &Addr, docname: &Docname) -> Result<(), String> {
+    info!("uploading doc {:?} to {:?}", docname, addr);
+    if let Ok(body) = std::fs::read_to_string(docname) {
+        match blocking_post(&addr, body) {
+            Ok(_) => Ok(info!("upload doc to {addr} successful")),
+            Err(msg) => Err(msg),
+        }
+    } else {
+        Err(format!("could not read from {docname}"))
     }
 }
 

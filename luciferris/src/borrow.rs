@@ -4,7 +4,7 @@ use std::process::Command;
 
 pub fn borrow(exe: PathBuf, exeargs: Option<Vec<String>>) {
     info!(
-        "executing {exe:?} with args {exeargs:?} in pwd {:?}",
+        "executing {exe:?} with args {exeargs:?}\n\tin pwd {:?}",
         std::env::current_dir()
     );
 

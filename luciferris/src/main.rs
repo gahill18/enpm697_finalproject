@@ -99,13 +99,14 @@ fn main() {
 
     let mut alive = true;
     let mut new_conf = false;
-    let mut recent_mode: Option<Modes> = Some(Modes::GetCommand);
+    let mut recent_mode: Option<Modes> = cli.mode;
 
     // Get the user specified config path, if any
     let mut conf: Option<Config> = match cli.config.as_deref() {
         Some(conf_path) => match read_config(conf_path) {
             Ok(out) => {
-                info!("read config: {out:?}");
+                info!("from path {conf_path} read config: {out:?}");
+                recent_mode = Some(get_mode(&Some(out.clone())));
                 Some(out)
             }
             Err(e) => {
