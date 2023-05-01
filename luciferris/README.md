@@ -3,8 +3,8 @@
 ## Roadmap
 
 - [ ] Command and Control
-  - [ ] Infected devices communicate with hard coded C2 server
-    - [ ] Post logs
+  - [X] Infected devices communicate with hard coded C2 server
+    - [X] Post logs
     - [X] Get commands/configs
   - [ ] C2 servers update and create new C2 servers, informing infected
 - [ ] Target Acquisition
