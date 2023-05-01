@@ -4,7 +4,7 @@ use chacha20poly1305::{
 };
 use log::{error, info};
 use serde::ser::SerializeStruct;
-use serde::{Deserialize, Serialize, Serializer};
+use serde::{Serialize, Serializer};
 use std::{
     fs::{read_dir, DirEntry, File, ReadDir},
     io::{Read, Write},

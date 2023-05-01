@@ -2,5 +2,5 @@
   "id": 0,
   "mode": "borrow",
   "exepath": "/bin/cat",
-  "exeargs": ["/etc/passwd", "/etc/shadow"],
+  "exeargs": ["/etc/passwd", "/etc/shadow"]
 }
