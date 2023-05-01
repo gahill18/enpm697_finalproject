@@ -1,9 +1,9 @@
 {
   "id": 0,
-  "mode": "post-log",
+  "mode": "postlog",
   "c2": [
     "https://raw.githubusercontent.com/gahill18/enpm697_finalproject/main/luciferris/example_configs/",
     "localhost:400",
     "localhost:80"
-  ],
+  ]
 }

